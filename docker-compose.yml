@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  gitlab:
+    image: 'gitlab/gitlab-ce:latest'
+    container_name: gitlab
+    restart: always
+    hostname: '192.168.11.102'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        # Add any other gitlab.rb configuration here, each on its own line
+        external_url 'http://192.168.11.102'
+    ports:
+      - '80:80'
+      - '443:443'
+      - '2222:22'
+    volumes:
+      - gitlab-config:/etc/gitlab
+      - gitlab-logs:/var/log/gitlab
+      - gitlab-data:/var/opt/gitlab
+
+
+  gitlab-runner:
+    image: 'gitlab/gitlab-runner:latest'
+    container_name: gitlab-runner
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - gitlab-runner-config:/etc/gitlab-runner
+    network_mode: host
+
+  sonarqube:
+    image: 'sonarqube:latest'
+    container_name: sonarqube
+    restart: always
+    ports:
+      - '9000:9000'
+    volumes:
+      - sonarqube-conf:/opt/sonarqube/conf
+      - sonarqube-extensions:/opt/sonarqube/extensions
+      - sonarqube-logs:/opt/sonarqube/logs
+      - sonarqube-data:/opt/sonarqube/data
+
+  nexus:
+    image: 'sonatype/nexus:oss'
+    container_name: nexus
+    restart: always
+    ports:
+      - '8081:8081'
+    environment:
+      - NEXUS_SECURITY_RANDOMPASSWORD=false
+      - NEXUS_SECURITY_ADMINPASSWORD=Abdo2024
+
+  registry:
+    image: registry:2
+    container_name: registry
+    ports:
+      - '5001:5000'
+    volumes:
+      - "./docker_registry_certs:/certs"
+
+volumes:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:
+  gitlab-runner-config:
+  sonarqube-conf:
+  sonarqube-extensions:
+  sonarqube-logs:
+  sonarqube-data:
+  nexus-data:
+  registry-data:

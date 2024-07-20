@@ -1,0 +1,55 @@
+stages:
+  - compile
+  - sonarQueb
+  - build
+  - deploy
+
+cache:
+  paths:
+    - build/
+
+compile:
+  stage: compile
+  image: gradle:jdk17
+  variables:
+    GIT_SSL_NO_VERIFY: 'true'
+    DOCKER_TLS_CERTDIR: ''
+  script:
+    - gradle  build  -x test 
+  artifacts:
+    paths:
+      - build/libs
+
+sonarqube:
+  stage: sonarQueb
+  image: gradle:jdk17
+  script:
+    - gradle sonarqube
+
+
+build:
+  stage: build
+  image: docker:latest
+  variables:
+    DOCKER_TLS_CERTDIR: ''
+    GIT_SSL_NO_VERIFY: 'true'
+  script:
+    - export DOCKER_BUILDKIT=0
+    - docker build -f Dockerfile --tag localhost:5001/devopsjavaapplication:latest .
+    - docker push  localhost:5001/devopsjavaapplication:latest
+  only:
+    - main
+
+deploy:
+  stage: deploy
+  image: docker:latest
+  variables:
+    DOCKER_TLS_CERTDIR: ''
+    GIT_SSL_NO_VERIFY: 'true'
+    SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY
+  script:
+    - docker pull localhost:5001/devopsjavaapplication:latest
+    - docker run -d localhost:5001/devopsjavaapplication:latest
+  only:
+    - main
+
