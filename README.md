@@ -1,49 +1,79 @@
-# this project is a titural to create piplins using a local registry local repository and a local sonarQube server
+Here's an improved version of your project documentation using Markdown:
 
+---
 
-how to use 
+# Tutorial: Creating Pipelines Using Local Registry, Repository, and SonarQube Server
 
+This project is a tutorial on setting up pipelines using a local registry, repository, and a local SonarQube server.
 
-- change gitlab ip address in docker-compose.yml in your 
+## How to Use
 
-      hostname: '192.168.11.102'
-      external_url 'http://192.168.11.102'
+1. **Change GitLab IP Address in `docker-compose.yml`**
 
-- in the root directory of this project run the following comande
+   Update the `docker-compose.yml` file with your GitLab IP address:
 
-```console
-docker-compose up -d
-```
+   ```yaml
+   hostname: '192.168.11.102'
+   external_url 'http://192.168.11.102'
+   ```
 
-- access to sonarQube and generate a new token and add it to build.gradl file change sonraQube url to 
+2. **Run Docker Compose**
 
-      property "sonar.host.url", "http://192.168.11.102:9000"
-      property "sonar.login", "sqp_2c3e28faed352398632e0c78822eec6e6d9d7472"
-- open you nexus repositroy throw the default username and password admin admin123 and change the url of the repo in build.gradl
-```java
-repositories {
-    mavenCentral()
-    maven {
-        url "http://http://192.168.11.102:8081/nexus/content/repositories/central/"
-        credentials {
-            username "admin"
-            password "admin123"
-        }
-        allowInsecureProtocol = true
-    }
-}
-```
-- make sure that your local gitlab is setted up and you already have a username and password to set a usename and password run the following comand in you machine console
-```console
-gitlab-rake "gitlab:password:reset[root]"
-```
-- create a new runner in your getlab and connecte it to your gitlab-runner image using this comande
+   In the root directory of this project, run the following command:
 
-```console
-gitlab-runner register 
-```
+   ```sh
+   docker-compose up -d
+   ```
 
-once everyting is setup make push the project in devopsjavaapplication to your local gitlab
+3. **Access SonarQube**
 
+   - Access SonarQube and generate a new token.
+   - Add the token to your `build.gradle` file and change the SonarQube URL:
 
-happy devOps 
+     ```gradle
+     property "sonar.host.url", "http://192.168.11.102:9000"
+     property "sonar.login", "sqp_2c3e28faed352398632e0c78822eec6e6d9d7472"
+     ```
+
+4. **Configure Nexus Repository**
+
+   - Open your Nexus repository using the default username and password (`admin/admin123`).
+   - Change the URL of the repo in your `build.gradle` file:
+
+     ```gradle
+     repositories {
+         mavenCentral()
+         maven {
+             url "http://192.168.11.102:8081/nexus/content/repositories/central/"
+             credentials {
+                 username "admin"
+                 password "admin123"
+             }
+             allowInsecureProtocol = true
+         }
+     }
+     ```
+
+5. **Setup Local GitLab**
+
+   Ensure your local GitLab is set up, and you have a username and password. To reset the root password, run the following command:
+
+   ```sh
+   gitlab-rake "gitlab:password:reset[root]"
+   ```
+
+6. **Register GitLab Runner**
+
+   Create a new runner in your GitLab and connect it to your `gitlab-runner` image using this command:
+
+   ```sh
+   gitlab-runner register 
+   ```
+
+7. **Push Project to GitLab**
+
+   Once everything is set up, push the project in `devopsjavaapplication` to your local GitLab and ensure all jobs are running correctly.
+
+---
+
+Happy DevOps!
